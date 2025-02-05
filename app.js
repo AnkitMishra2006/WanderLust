@@ -15,6 +15,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "/public")));
 
 app.engine("ejs", ejsMate);
 
@@ -46,6 +47,7 @@ app.get("/listings/new", (req, res) => {
 });
 
 // Show Route
+// if show route is above to new route then new in url will be treated as id and /listings/:id route will be used thats why show is below new
 app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
   const listing = await Listing.findById(id);

@@ -17,6 +17,7 @@ async function main() {
 }
 
 const initDB = async () => {
+  await Listing.deleteMany({});
   for (let data of initData.data) {
     const listing = await new Listing({
       title: data.title,
