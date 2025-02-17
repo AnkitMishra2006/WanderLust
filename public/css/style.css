@@ -55,7 +55,7 @@ body{
 }
 
 /* Cards */
-.card {
+.listing-card {
   border: none;
 
   text-decoration: none;

@@ -79,7 +79,7 @@ app.get(
   "/listings/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    const listing = await Listing.findById(id);
+    const listing = await Listing.findById(id).populate("reviews");
     res.render("listings/show.ejs", { listing });
   })
 );
@@ -133,7 +133,7 @@ app.delete(
 // Post Route
 app.post(
   "/listings/:id/reviews",
-  validateReview,
+
   wrapAsync(async (req, res) => {
     let listing = await Listing.findById(req.params.id);
     let newReview = new Review(req.body.review);
@@ -145,13 +145,24 @@ app.post(
   })
 );
 
+// Delete Review Route
+app.delete(
+  "/listings/:id/reviews/:reviewId",
+  wrapAsync(async (req, res, next) => {
+    let { id, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+  })
+);
+
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page not Found!"));
 });
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something Went Wrong" } = err;
-  res.status(statusCode).send(message);
+  res.status(statusCode).send(err);
 });
 
 app.listen(port, () => {
