@@ -37,4 +37,41 @@
       </form>
     </div>
   </div>
+  <div class="col-8 offset-2 mb-4 mt-4">
+    <hr />
+    <h4>Leave a Review</h4>
+    <form
+      action="/listings/<%= listing.id %>/reviews"
+      method="POST"
+      novalidate
+      class="needs-validation"
+    >
+      <div class="mb-3 mt-3">
+        <label for="rating" class="form-label">Rating</label>
+        <input
+          type="range"
+          name="review[rating]"
+          class="form-range"
+          id="rating"
+          min="1"
+          max="5"
+        />
+      </div>
+      <div class="mb-3 mt-3">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea
+          name="review[comment]"
+          id="comment"
+          cols="30"
+          rows="4"
+          class="form-control"
+          required
+        ></textarea>
+        <div class="invalid-feedback">
+          Please write a Comment to Submit a Review
+        </div>
+      </div>
+      <button class="btn btn-outline-dark">Submit</button>
+    </form>
+  </div>
 </div>
