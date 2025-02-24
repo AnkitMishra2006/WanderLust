@@ -14,6 +14,7 @@ const User = require("./models/user.js");
 const listingRouter = require("./Routes/listing.js");
 const reviewRouter = require("./Routes/review.js");
 const userRouter = require("./Routes/user.js");
+const wrapAsync = require("./utils/wrapAsync.js");
 
 const port = 8080;
 
@@ -58,21 +59,34 @@ app.get("/", (req, res) => {
 
 app.use(session(sessionOptions));
 app.use(flash());
-app.use(passport.initialize());
+app.use(passport.initialize()); // passport
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(new LocalStrategy(User.authenticate())); //passport-local-mongoose
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currUser = req.user; //Can't use req.user in /includes/navbar.ejs
   next();
 });
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+app.get(
+  "/demo",
+  wrapAsync(async (req, res) => {
+    let fakeUser = new User({
+      email: "demonaccount@gmail.com",
+      username: "Demo",
+    });
+
+    let registeredUser = await User.register(fakeUser, "HelloWorld"); //
+    res.send(registeredUser);
+  })
+);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page not Found!"));

@@ -18,6 +18,10 @@ async function main() {
 
 const initDB = async () => {
   await Listing.deleteMany({});
+  initData.data = initData.data.map((obj) => ({
+    ...obj,
+    owner: "67bc9a5e8cc25ecb3b196bbd",
+  }));
   for (let data of initData.data) {
     const listing = await new Listing({
       title: data.title,
@@ -26,6 +30,7 @@ const initDB = async () => {
       price: data.price,
       location: data.location,
       country: data.country,
+      owner: data.owner,
     }).save();
     console.log("Data Initalised");
   }
