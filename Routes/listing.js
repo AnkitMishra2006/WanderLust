@@ -31,12 +31,13 @@ router
     validateListing,
     wrapAsync(listingController.updateListing)
   )
-  .delete(isLoggedIn, wrapAsync(listingController.deleteListing));
+  .delete(isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
 
 // Edit Route
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isOwner,
   wrapAsync(listingController.renderEditForm)
 );
 
