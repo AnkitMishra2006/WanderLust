@@ -59,7 +59,7 @@ app.get("/", (req, res) => {
 
 app.use(session(sessionOptions));
 app.use(flash());
-app.use(passport.initialize()); // passport
+app.use(passport.initialize()); //Initializes passport
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate())); //passport-local-mongoose
 passport.serializeUser(User.serializeUser());
@@ -68,7 +68,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
-  res.locals.currUser = req.user; //Can't use req.user in /includes/navbar.ejs
+  res.locals.currUser = req.user; //Can't use req.user in /includes/navbar.ejs can't use it in ejs files so we need to pass it through locals 
   next();
 });
 
