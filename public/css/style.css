@@ -1,10 +1,10 @@
-body{
+body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-.container{
+.container {
   flex: 1;
 }
 /* Navbar */
@@ -88,11 +88,18 @@ body{
 }
 
 /* Show Page */
-.show-img{
+.show-img {
   height: 40vh;
 }
 
-.show-btns{
+.show-btns {
   display: flex;
   gap: 25rem;
+}
+
+/* Map */
+
+#map iframe {
+  height: 400px;
+  width: 100vh;
 }

@@ -1,4 +1,5 @@
 const Listing = require("../models/listing");
+const { getCoordinates } = require("../utils/geocodeing.js");
 
 module.exports.index = async (req, res) => {
   const listings = await Listing.find({});
@@ -24,7 +25,11 @@ module.exports.showListing = async (req, res) => {
     res.redirect("/listings");
   }
   const MAPTILER_API_KEY = process.env.MAPTILER_API_KEY;
-  res.render("listings/show.ejs", { listing, MAPTILER_API_KEY });
+
+  // Use coordinates from the listing document
+  const coordinates = listing.coordinates || null;
+
+  res.render("listings/show.ejs", { listing, MAPTILER_API_KEY, coordinates });
 };
 
 module.exports.createListing = async (req, res, next) => {
@@ -33,6 +38,21 @@ module.exports.createListing = async (req, res, next) => {
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
   newListing.image = { url, filename };
+
+  // Geocode the location and store coordinates
+  const MAPTILER_API_KEY = process.env.MAPTILER_API_KEY;
+  if (newListing.location) {
+    try {
+      const coordinates = await getCoordinates(
+        newListing.location,
+        MAPTILER_API_KEY
+      );
+      newListing.coordinates = coordinates;
+    } catch (err) {
+      console.error("Geocoding error (createListing):", err);
+    }
+  }
+
   await newListing.save();
   req.flash("success", "New Listing Created");
   res.redirect("/listings");
