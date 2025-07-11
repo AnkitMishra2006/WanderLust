@@ -22,7 +22,7 @@ const wrapAsync = require("./utils/wrapAsync.js");
 
 const port = 8080;
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.MONGODB_URI;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -57,10 +57,6 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => {
-  res.send("I am Root");
-});
-
 app.use(session(sessionOptions));
 app.use(flash());
 app.use(passport.initialize()); //Initializes passport
@@ -79,18 +75,18 @@ app.use((req, res, next) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
-app.get(
-  "/demo",
-  wrapAsync(async (req, res) => {
-    let fakeUser = new User({
-      email: "demonaccount@gmail.com",
-      username: "Demo",
-    });
+// app.get(
+//   "/demo",
+//   wrapAsync(async (req, res) => {
+//     let fakeUser = new User({
+//       email: "demonaccount@gmail.com",
+//       username: "Demo",
+//     });
 
-    let registeredUser = await User.register(fakeUser, "HelloWorld"); //
-    res.send(registeredUser);
-  })
-);
+//     let registeredUser = await User.register(fakeUser, "HelloWorld"); //
+//     res.send(registeredUser);
+//   })
+// );
 
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page not Found!"));

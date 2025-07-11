@@ -1,29 +1,155 @@
 <% layout("/layouts/boilerplate") %>
-<body>
-  <h3>All Listings</h3>
-  <!-- <form method="GET" action="/listings/new">
-    <button>Create New Listing</button>
-  </form> -->
 
-  <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1">
-    <% for(let listing of listings) { %>
-    <a href="/listings/<%= listing._id %>">
-      <div class="card col listing-card" style="width: 17rem">
-        <img
-          class="card-img-top"
-          src="<%= listing.image.url %>"
-          alt="Card image cap"
-          style="height: 19rem"
-        />
-        <div class="card-img-overlay"></div>
-        <div class="card-body">
-          <p class="card-text">
-            <b><%= listing.title %></b><br />
-            &#8377; <%= listing.price.toLocaleString("en-IN") %>/night
-          </p>
-        </div>
+  <style>
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .tax-active {
+      background-color: black;
+      color: white;
+      opacity: 0.7 !important;
+    }
+
+    .tax-active:hover {
+      opacity: 1 !important;
+    }
+
+    .filter {
+      text-align: center;
+      font-size: 12px;
+      margin-right: 2.5rem;
+      opacity: 0.7;
+    }
+
+    .filter:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .tax-switch button {
+
+      border: 1px solid rgba(48, 46, 46, 0.862);
+      border-radius: 1rem;
+      height: 2.25rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      margin-left: 5rem;
+      align-items: center;
+      display: flex;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .tax-switch button:hover {
+      opacity: 1;
+      /* background-color: rgba(48, 46, 46, 0.862);
+      color: white; */
+    }
+
+    .tax-info {
+      display: none;
+    }
+  </style>
+
+  <body>
+
+    <div id="filters" class="mt-4 mb-4">
+      <div class="filter">
+        <div><i class="fa-solid fa-fire"></i></div>
+        <p>Trending</p>
       </div>
-    </a>
-    <% } %>
-  </div>
-</body>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-bed"></i></div>
+        <p>Rooms</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-mountain-city"></i></div>
+        <p>Iconic Cities</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-brands fa-fort-awesome"></i></div>
+        <p>Castles</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-mountain-sun"></i></i></div>
+        <p>Mountain Views</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-tent"></i></div>
+        <p>Camping</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-person-swimming"></i></div>
+        <p>Amazing Nature</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-tractor"></i></div>
+        <p>Farms</p>
+      </div>
+
+      <div class="filter">
+        <div><i class="fa-solid fa-snowflake"></i></div>
+        <p>Arctic</p>
+      </div>
+
+      <!-- <div class="filter">
+        <div><i class="fa-solid fa-ship"></i></div>
+        <p>Boats</p>
+      </div> -->
+
+      <div class="tax-switch">
+        <!-- <div class="form-check-reverse form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+          <label class="form-check-label" for="switchCheckDefault">Display Total After Taxes</label>
+        </div> -->
+        <button><b>Display Taxes</b></button>
+      </div>
+    </div>
+
+    <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1">
+      <% for(let listing of listings) { %>
+        <a href="/listings/<%= listing._id %>">
+          <div class="card col listing-card" style="width: 17rem">
+            <img class="card-img-top" src="<%= listing.image.url %>" alt="Card image cap" style="height: 19rem" />
+            <div class="card-img-overlay"></div>
+            <div class="card-body">
+              <p class="card-text">
+                <b>
+                  <%= listing.title %>
+                </b><br />
+                &#8377; <%= listing.price.toLocaleString("en-IN") %>/night
+                  <i class="tax-info"> &nbsp; +18% GST</i>
+              </p>
+            </div>
+          </div>
+        </a>
+        <% } %>
+    </div>
+  </body>
+
+  <script>
+
+    const taxButton = document.querySelector(".tax-switch button");
+
+    taxButton.addEventListener("click", () => {
+      taxButton.classList.toggle("tax-active");
+      let taxInfo = document.getElementsByClassName("tax-info");
+      for (info of taxInfo) {
+        if (info.style.display != "inline") {
+          info.style.display = "inline";
+        } else {
+          info.style.display = "none";
+        }
+      }
+    });
+  </script>
