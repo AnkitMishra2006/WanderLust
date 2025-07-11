@@ -24,10 +24,9 @@ const wrapAsync = require("./utils/wrapAsync.js");
 const port = 8080;
 
 // Use environment variable for MongoDB URL, fallback to localhost
-const MONGO_URL =
-  process.env.MONGO_URL || "mongodb://localhost:27017/wanderlust";
+const MONGO_URL = process.env.MONGO_URL;
 // Use environment variable for session secret, fallback to a default (should be set in production)
-const SESSION_SECRET = process.env.SESSION_SECRET || "mySuperSecretCode";
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
