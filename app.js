@@ -10,6 +10,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError.js");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -22,7 +23,11 @@ const wrapAsync = require("./utils/wrapAsync.js");
 
 const port = 8080;
 
-const MONGO_URL = process.env.MONGODB_URI;
+// Use environment variable for MongoDB URL, fallback to localhost
+const MONGO_URL =
+  process.env.MONGO_URL || "mongodb://localhost:27017/wanderlust";
+// Use environment variable for session secret, fallback to a default (should be set in production)
+const SESSION_SECRET = process.env.SESSION_SECRET || "mySuperSecretCode";
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -46,14 +51,28 @@ async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
+const store = MongoStore.create({
+  mongoUrl: MONGO_URL,
+  crypto: {
+    secret: SESSION_SECRET,
+  },
+  touchAfter: 24 * 3600, // time in seconds after which the session will be updated
+});
+
+store.on("error", () => {
+  console.log("Session Store Error");
+});
+
 const sessionOptions = {
-  secret: "mySuperSecretCode",
+  store: store,
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Only set secure in production
   },
 };
 
@@ -75,6 +94,10 @@ app.use((req, res, next) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+
+app.get("/", (req, res) => {
+  res.send("Welcome to WanderLust!");
+});
 // app.get(
 //   "/demo",
 //   wrapAsync(async (req, res) => {

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Review = require("./review");
+const Review = require("./review.js");
 
 const listingSchema = new mongoose.Schema({
   title: {
@@ -11,7 +11,7 @@ const listingSchema = new mongoose.Schema({
   },
   image: {
     url: String,
-    filename: String, 
+    filename: String,
   },
   price: {
     type: Number,
@@ -24,7 +24,7 @@ const listingSchema = new mongoose.Schema({
   },
   coordinates: {
     type: [Number], // [lng, lat]
-    index: '2dsphere', // for geospatial queries if needed
+    index: "2dsphere", // for geospatial queries if needed
   },
   reviews: [
     {

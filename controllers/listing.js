@@ -1,4 +1,4 @@
-const Listing = require("../models/listing");
+const Listing = require("../models/listing.js");
 const { getCoordinates } = require("../utils/geocodeing.js");
 
 module.exports.index = async (req, res) => {
