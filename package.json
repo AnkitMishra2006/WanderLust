@@ -4,10 +4,13 @@
   },
   "name": "wanderlust",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "build": "echo 'Build step completed'",
+    "vercel-build": "echo 'Vercel build completed'",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",

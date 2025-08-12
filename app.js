@@ -62,18 +62,38 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 app.engine("ejs", ejsMate);
 
-main()
-  .then(() => {
-    // Database connected successfully
-  })
-  .catch((err) => {
-    console.error("Database connection failed:", err);
-    process.exit(1);
-  });
+// Database connection with connection pooling for serverless
+let isConnected = false;
 
-async function main() {
-  await mongoose.connect(MONGO_URL);
-}
+const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+
+  try {
+    const db = await mongoose.connect(MONGO_URL, {
+      bufferCommands: false,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
+    isConnected = db.connections[0].readyState;
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    throw error;
+  }
+};
+
+// Middleware to ensure DB connection for each request
+const ensureDBConnection = async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 const store = MongoStore.create({
   mongoUrl: MONGO_URL,
@@ -96,9 +116,13 @@ const sessionOptions = {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Only set secure in production
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   },
 };
+
+// Apply database connection middleware
+app.use(ensureDBConnection);
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -145,6 +169,12 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("Error.ejs", { err });
 });
 
-app.listen(port, () => {
-  console.log(`App is listening on port ${port}`);
-});
+// Export for Vercel serverless deployment
+if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+  module.exports = app;
+} else {
+  // For local development
+  app.listen(port, () => {
+    console.log(`App is listening on port ${port}`);
+  });
+}
