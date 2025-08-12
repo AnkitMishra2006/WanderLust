@@ -9,7 +9,7 @@
       <div class="card col-8 listing-card">
         <img class="card-img-top show-img" src="<%= listing.image.url %>" alt="listing-image" />
         <div class="card-body">
-          <p class="card-text"><i>@<%= listing.owner.username %></i> </p>
+          <p class="card-text"><i>@<%= listing.owner ? listing.owner.username : 'Unknown Owner' %></i> </p>
           <p class="card-text"><i>
               <%= listing.description %>
           </p>
@@ -24,7 +24,7 @@
       </div>
 
       <br />
-      <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
+      <% if (currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
         <div class="row show-btns">
           <div class="col-2 ml-1">
             <button class="btn btn-dark">

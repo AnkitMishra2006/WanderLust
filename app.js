@@ -16,6 +16,15 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
+// Security imports
+const {
+  helmetConfig,
+  limiter,
+  authLimiter,
+  mongoSanitize,
+} = require("./utils/security.js");
+const logger = require("./utils/logger.js");
+
 const listingRouter = require("./Routes/listing.js");
 const reviewRouter = require("./Routes/review.js");
 const userRouter = require("./Routes/user.js");
@@ -28,8 +37,24 @@ const MONGO_URL = process.env.MONGO_URL;
 // Use environment variable for session secret, fallback to a default (should be set in production)
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
+// Validate required environment variables
+if (!MONGO_URL) {
+  console.error("❌ MONGO_URL environment variable is required");
+  process.exit(1);
+}
+
+if (!SESSION_SECRET) {
+  console.error("❌ SESSION_SECRET environment variable is required");
+  process.exit(1);
+}
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// Security middleware
+app.use(helmetConfig);
+app.use(limiter);
+app.use(mongoSanitize);
 
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
@@ -40,10 +65,11 @@ app.engine("ejs", ejsMate);
 
 main()
   .then(() => {
-    console.log("Connection to DB Successful ");
+    logger.info("Connection to DB Successful");
   })
   .catch((err) => {
-    console.log(err);
+    logger.error("Database connection failed:", err);
+    process.exit(1);
   });
 
 async function main() {
@@ -59,7 +85,7 @@ const store = MongoStore.create({
 });
 
 store.on("error", () => {
-  console.log("Session Store Error");
+  logger.error("Session Store Error");
 });
 
 const sessionOptions = {
@@ -92,7 +118,7 @@ app.use((req, res, next) => {
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
-app.use("/", userRouter);
+app.use("/", authLimiter, userRouter); // Apply stricter rate limiting to auth routes
 
 app.get("/", (req, res) => {
   res.send("Welcome to WanderLust!");
@@ -116,9 +142,10 @@ app.all("*", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something Went Wrong" } = err;
+  logger.error("Error occurred:", err);
   res.status(statusCode).render("Error.ejs", { err });
 });
 
 app.listen(port, () => {
-  console.log(`app is listening on port ${port}`);
+  logger.info(`App is listening on port ${port}`);
 });

@@ -2,8 +2,51 @@ const Listing = require("../models/listing.js");
 const { getCoordinates } = require("../utils/geocodeing.js");
 
 module.exports.index = async (req, res) => {
-  const listings = await Listing.find({});
-  res.render("listings/index.ejs", { listings });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 12;
+  const skip = (page - 1) * limit;
+
+  // Build search query
+  let searchQuery = {};
+  if (req.query.search) {
+    const searchTerm = req.query.search;
+    searchQuery = {
+      $or: [
+        { title: { $regex: searchTerm, $options: "i" } },
+        { location: { $regex: searchTerm, $options: "i" } },
+        { country: { $regex: searchTerm, $options: "i" } },
+        { description: { $regex: searchTerm, $options: "i" } },
+      ],
+    };
+  }
+
+  // Add price filtering
+  if (req.query.minPrice || req.query.maxPrice) {
+    searchQuery.price = {};
+    if (req.query.minPrice)
+      searchQuery.price.$gte = parseInt(req.query.minPrice);
+    if (req.query.maxPrice)
+      searchQuery.price.$lte = parseInt(req.query.maxPrice);
+  }
+
+  const listings = await Listing.find(searchQuery)
+    .populate("owner", "username")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean(); // Use lean() for better performance when you don't need mongoose documents
+
+  const total = await Listing.countDocuments(searchQuery);
+  const totalPages = Math.ceil(total / limit);
+
+  res.render("listings/index.ejs", {
+    listings,
+    currentPage: page,
+    totalPages,
+    hasNext: page < totalPages,
+    hasPrev: page > 1,
+    searchQuery: req.query,
+  });
 };
 
 module.exports.renderNewForm = (req, res) => {
@@ -12,18 +55,28 @@ module.exports.renderNewForm = (req, res) => {
 
 module.exports.showListing = async (req, res) => {
   let { id } = req.params;
+
+  // Validate ObjectId format
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    req.flash("error", "Invalid listing ID");
+    return res.redirect("/listings");
+  }
+
   const listing = await Listing.findById(id)
     .populate({
       path: "reviews",
       populate: {
         path: "author",
+        select: "username", // Only select username for performance
       },
     })
-    .populate("owner");
+    .populate("owner", "username"); // Only select username for performance
+
   if (!listing) {
     req.flash("error", "No such Listing Found");
-    res.redirect("/listings");
+    return res.redirect("/listings");
   }
+
   const MAPTILER_API_KEY = process.env.MAPTILER_API_KEY;
 
   // Use coordinates from the listing document
