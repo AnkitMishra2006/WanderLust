@@ -22,6 +22,9 @@ router
 // New Route
 router.get("/new", isLoggedIn, listingController.renderNewForm);
 
+// Advanced Search Route
+router.get("/search", listingController.renderSearchForm);
+
 // Show Route
 // if show route is above to new route then new in url will be treated as id and /listings/:id route will be used thats why show is below new
 router

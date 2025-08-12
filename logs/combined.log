@@ -10,3 +10,5 @@
 {"level":"\u001b[32minfo\u001b[39m","message":"Connection to DB Successful","service":"wanderlust","timestamp":"2025-08-12T03:42:32.941Z"}
 {"level":"\u001b[32minfo\u001b[39m","message":"App is listening on port 8080","service":"wanderlust","timestamp":"2025-08-12T03:43:10.520Z"}
 {"level":"\u001b[32minfo\u001b[39m","message":"Connection to DB Successful","service":"wanderlust","timestamp":"2025-08-12T03:43:10.983Z"}
+{"level":"\u001b[32minfo\u001b[39m","message":"App is listening on port 8080","service":"wanderlust","timestamp":"2025-08-12T03:48:54.081Z"}
+{"level":"\u001b[32minfo\u001b[39m","message":"Connection to DB Successful","service":"wanderlust","timestamp":"2025-08-12T03:48:54.536Z"}

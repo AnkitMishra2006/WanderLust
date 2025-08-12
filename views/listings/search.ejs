@@ -1,0 +1,116 @@
+<% layout("/layouts/boilerplate") %>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="mb-0"><i class="fa-solid fa-magnifying-glass"></i> Advanced Search</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="/listings" method="GET">
+                            <div class="row">
+                                <!-- Location Search -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="search" class="form-label"><i class="fa-solid fa-location-dot"></i>
+                                        Location</label>
+                                    <input type="text" class="form-control" id="search" name="search"
+                                        placeholder="Enter city, country, or keyword..."
+                                        value="<%= typeof searchQuery !== 'undefined' && searchQuery.search ? searchQuery.search : '' %>">
+                                    <div class="form-text">Search by destination, city, country, or property type</div>
+                                </div>
+
+                                <!-- Price Range -->
+                                <div class="col-md-3 mb-3">
+                                    <label for="minPrice" class="form-label"><i class="fa-solid fa-rupee-sign"></i> Min
+                                        Price</label>
+                                    <input type="number" class="form-control" id="minPrice" name="minPrice"
+                                        placeholder="Min"
+                                        value="<%= typeof searchQuery !== 'undefined' && searchQuery.minPrice ? searchQuery.minPrice : '' %>">
+                                </div>
+
+                                <div class="col-md-3 mb-3">
+                                    <label for="maxPrice" class="form-label"><i class="fa-solid fa-rupee-sign"></i> Max
+                                        Price</label>
+                                    <input type="number" class="form-control" id="maxPrice" name="maxPrice"
+                                        placeholder="Max"
+                                        value="<%= typeof searchQuery !== 'undefined' && searchQuery.maxPrice ? searchQuery.maxPrice : '' %>">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-lg me-3">
+                                        <i class="fa-solid fa-magnifying-glass"></i> Search Listings
+                                    </button>
+                                    <a href="/listings" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fa-solid fa-arrow-rotate-left"></i> Clear Filters
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Popular Destinations -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fa-solid fa-fire"></i> Popular Destinations</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <a href="/listings?search=New%20York" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-building"></i> New York
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <a href="/listings?search=Greece" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-umbrella-beach"></i> Greece
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <a href="/listings?search=Switzerland" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-mountain"></i> Switzerland
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <a href="/listings?search=United%20States" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-flag-usa"></i> United States
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <a href="/listings?search=Italy" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-pizza-slice"></i> Italy
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <a href="/listings?search=Japan" class="btn btn-outline-info btn-sm w-100">
+                                    <i class="fa-solid fa-torii-gate"></i> Japan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Tips -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fa-solid fa-lightbulb"></i> Search Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fa-solid fa-check text-success"></i> <strong>Location:</strong>
+                                Try searching by city (e.g., "Tokyo"), country (e.g., "Japan"), or region</li>
+                            <li class="mb-2"><i class="fa-solid fa-check text-success"></i> <strong>Property
+                                    Type:</strong> Search for "cabin", "villa", "apartment", "cottage", etc.</li>
+                            <li class="mb-2"><i class="fa-solid fa-check text-success"></i> <strong>Features:</strong>
+                                Try "beachfront", "mountain view", "luxury", "historic"</li>
+                            <li class="mb-2"><i class="fa-solid fa-check text-success"></i> <strong>Price
+                                    Range:</strong> Set minimum and maximum prices to filter results</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

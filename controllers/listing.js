@@ -53,6 +53,10 @@ module.exports.renderNewForm = (req, res) => {
   res.render("listings/new.ejs");
 };
 
+module.exports.renderSearchForm = (req, res) => {
+  res.render("listings/search.ejs", { searchQuery: req.query });
+};
+
 module.exports.showListing = async (req, res) => {
   let { id } = req.params;
 

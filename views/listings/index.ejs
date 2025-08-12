@@ -116,25 +116,138 @@
       </div>
     </div>
 
-    <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1">
-      <% for(let listing of listings) { %>
-        <a href="/listings/<%= listing._id %>">
-          <div class="card col listing-card" style="width: 17rem">
-            <img class="card-img-top" src="<%= listing.image.url %>" alt="Card image cap" style="height: 19rem" />
-            <div class="card-img-overlay"></div>
-            <div class="card-body">
-              <p class="card-text">
-                <b>
-                  <%= listing.title %>
-                </b><br />
-                &#8377; <%= listing.price.toLocaleString("en-IN") %>/night
-                  <i class="tax-info"> &nbsp; +18% GST</i>
-              </p>
+    <!-- Search Results Info -->
+    <% if(searchQuery && (searchQuery.search || searchQuery.minPrice || searchQuery.maxPrice)) { %>
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="alert alert-info mb-3 d-flex justify-content-between align-items-center">
+              <div>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <% if(searchQuery.search) { %>
+                  Search results for "<strong>
+                    <%= searchQuery.search %>
+                  </strong>"
+                  <% } %>
+                    <% if(searchQuery.minPrice || searchQuery.maxPrice) { %>
+                      <% if(searchQuery.search) { %> • <% } %>
+                          Price: ₹<%= searchQuery.minPrice || 0 %> - ₹<%= searchQuery.maxPrice || '∞' %>
+                              <% } %>
+                                <br>
+                                Found <%= listings.length %> listing<%= listings.length !==1 ? 's' : '' %>
+                                    <% if(listings.length===0) { %>
+                                      <br><small>Try searching with different keywords or adjusting your price
+                                        range.</small>
+                                      <% } %>
+              </div>
+              <a href="/listings" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-times"></i> Clear Search
+              </a>
             </div>
           </div>
-        </a>
-        <% } %>
-    </div>
+        </div>
+      </div>
+      <% } %>
+
+        <div class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1">
+          <% for(let listing of listings) { %>
+            <a href="/listings/<%= listing._id %>">
+              <div class="card col listing-card" style="width: 17rem">
+                <img class="card-img-top" src="<%= listing.image.url %>" alt="Card image cap" style="height: 19rem" />
+                <div class="card-img-overlay"></div>
+                <div class="card-body">
+                  <p class="card-text">
+                    <b>
+                      <%= listing.title %>
+                    </b><br />
+                    &#8377; <%= listing.price.toLocaleString("en-IN") %>/night
+                      <i class="tax-info"> &nbsp; +18% GST</i>
+                  </p>
+                </div>
+              </div>
+            </a>
+            <% } %>
+        </div>
+
+        <!-- Pagination Controls -->
+        <% if(totalPages> 1) { %>
+          <div class="container">
+            <div class="row">
+              <div class="col-12 d-flex justify-content-center mt-4">
+                <nav aria-label="Listings pagination">
+                  <ul class="pagination">
+                    <!-- Previous Page -->
+                    <% let searchParams='' ; if (searchQuery.search) searchParams +='&search=' +
+                      encodeURIComponent(searchQuery.search); if (searchQuery.minPrice) searchParams +='&minPrice=' +
+                      encodeURIComponent(searchQuery.minPrice); if (searchQuery.maxPrice) searchParams +='&maxPrice=' +
+                      encodeURIComponent(searchQuery.maxPrice); %>
+                      <% if(hasPrev) { %>
+                        <li class="page-item">
+                          <a class="page-link" href="?page=<%= currentPage - 1 %><%= searchParams %>">
+                            <i class="fa-solid fa-chevron-left"></i> Previous
+                          </a>
+                        </li>
+                        <% } else { %>
+                          <li class="page-item disabled">
+                            <span class="page-link"><i class="fa-solid fa-chevron-left"></i> Previous</span>
+                          </li>
+                          <% } %>
+
+                            <!-- Page Numbers -->
+                            <% let startPage=Math.max(1, currentPage - 2); let endPage=Math.min(totalPages, currentPage
+                              + 2); if (startPage> 1) {
+                              %>
+                              <li class="page-item">
+                                <a class="page-link" href="?page=1<%= searchParams %>">1</a>
+                              </li>
+                              <% if (startPage> 2) { %>
+                                <li class="page-item disabled">
+                                  <span class="page-link">...</span>
+                                </li>
+                                <% } %>
+                                  <% } %>
+
+                                    <% for(let i=startPage; i <=endPage; i++) { %>
+                                      <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %><%= searchParams %>">
+                                          <%= i %>
+                                        </a>
+                                      </li>
+                                      <% } %>
+
+                                        <% if (endPage < totalPages) { %>
+                                          <% if (endPage < totalPages - 1) { %>
+                                            <li class="page-item disabled">
+                                              <span class="page-link">...</span>
+                                            </li>
+                                            <% } %>
+                                              <li class="page-item">
+                                                <a class="page-link" href="?page=<%= totalPages %><%= searchParams %>">
+                                                  <%= totalPages %>
+                                                </a>
+                                              </li>
+                                              <% } %>
+
+                                                <!-- Next Page -->
+                                                <% if(hasNext) { %>
+                                                  <li class="page-item">
+                                                    <a class="page-link"
+                                                      href="?page=<%= currentPage + 1 %><%= searchParams %>">
+                                                      Next <i class="fa-solid fa-chevron-right"></i>
+                                                    </a>
+                                                  </li>
+                                                  <% } else { %>
+                                                    <li class="page-item disabled">
+                                                      <span class="page-link">Next <i
+                                                          class="fa-solid fa-chevron-right"></i></span>
+                                                    </li>
+                                                    <% } %>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+          <% } %>
   </body>
 
   <script>
