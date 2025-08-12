@@ -120,8 +120,9 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", authLimiter, userRouter); // Apply stricter rate limiting to auth routes
 
+// Root route - redirect to listings
 app.get("/", (req, res) => {
-  res.send("Welcome to WanderLust!");
+  res.redirect("/listings");
 });
 // app.get(
 //   "/demo",

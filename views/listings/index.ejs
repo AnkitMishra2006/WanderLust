@@ -251,18 +251,40 @@
   </body>
 
   <script>
+    window.addEventListener('load', function () {
+      const taxButton = document.querySelector(".tax-switch button");
 
-    const taxButton = document.querySelector(".tax-switch button");
-
-    taxButton.addEventListener("click", () => {
-      taxButton.classList.toggle("tax-active");
-      let taxInfo = document.getElementsByClassName("tax-info");
-      for (info of taxInfo) {
-        if (info.style.display != "inline") {
-          info.style.display = "inline";
-        } else {
-          info.style.display = "none";
-        }
+      if (!taxButton) {
+        console.error("Tax button not found!");
+        return;
       }
+
+      console.log("Tax button found, adding event listener");
+
+      taxButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        console.log("Tax button clicked!");
+
+        // Toggle button active state
+        taxButton.classList.toggle("tax-active");
+        const isActive = taxButton.classList.contains("tax-active");
+
+        // Update button text
+        taxButton.innerHTML = isActive ? "<b>Hide Taxes</b>" : "<b>Display Taxes</b>";
+
+        // Toggle tax info visibility
+        const taxInfoElements = document.querySelectorAll(".tax-info");
+        console.log("Found", taxInfoElements.length, "tax-info elements");
+
+        taxInfoElements.forEach(function (element, index) {
+          if (isActive) {
+            element.style.display = "inline";
+            console.log("Showing tax info element", index);
+          } else {
+            element.style.display = "none";
+            console.log("Hiding tax info element", index);
+          }
+        });
+      });
     });
   </script>
