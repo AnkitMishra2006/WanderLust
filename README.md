@@ -2,7 +2,7 @@
 
 **WanderLust** is a comprehensive full-stack travel accommodation web application inspired by platforms like Airbnb. Built with modern web technologies and enterprise-level security, it allows users to explore, search, create, review, and manage property listings from around the world with interactive maps, secure authentication, cloud-based image storage, and advanced search capabilities.
 
-🔗 **Live Demo**: [https://wanderlust-zox7.onrender.com/listings](https://wanderlust-zox7.onrender.com/listings)
+🔗 **Live Demo**: [https://wander-lust-mocha.vercel.app/listings](https://wander-lust-mocha.vercel.app/listings)
 
 ---
 
