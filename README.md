@@ -1,6 +1,6 @@
 # 🌍 WanderLust
 
-**WanderLust** is a comprehensive full-stack travel accommodation web application inspired by platforms like Airbnb. Built with modern web technologies, it allows users to explore, create, review, and manage property listings from around the world with interactive maps, secure authentication, and cloud-based image storage.
+**WanderLust** is a comprehensive full-stack travel accommodation web application inspired by platforms like Airbnb. Built with modern web technologies and enterprise-level security, it allows users to explore, search, create, review, and manage property listings from around the world with interactive maps, secure authentication, cloud-based image storage, and advanced search capabilities.
 
 🔗 **Live Demo**: [https://wanderlust-zox7.onrender.com/listings](https://wanderlust-zox7.onrender.com/listings)
 
@@ -27,49 +27,62 @@
 
 ### 🏡 **Property Management**
 
-- Browse and search through property listings
+- Browse and search through property listings with advanced filtering
+- Full-text search across titles, descriptions, and locations
+- Pagination for optimal performance with large datasets
 - Create new property listings with detailed information
 - Edit and update existing listings (owner-only)
 - Delete listings with cascade review deletion
 - Image upload and management via Cloudinary
+- Tax information toggle for pricing transparency
 
 ### 📍 **Location & Mapping**
 
 - Interactive map integration using MapTiler API
-- Automatic geocoding of property locations
+- Automatic geocoding of property locations with fallback handling
 - Coordinate-based location storage
 - Location-based property display
+- Map markers with listing details
 
 ### 💬 **Review System**
 
 - Add detailed reviews and ratings for properties
-- Star-based rating system
+- Star-based rating system (1-5 stars)
 - Delete reviews (author-only)
 - Review ownership protection
+- Average rating calculation and display
 
 ### 👤 **User Authentication & Authorization**
 
 - Secure user registration and login
 - Password hashing with Passport.js Local Strategy
-- Session-based authentication
+- Session-based authentication with MongoDB storage
+- Rate limiting on authentication routes
 - Protected routes and ownership validation
 - Automatic redirect after login
-
-### 🔒 **Security Features**
-
-- Input validation with Joi schemas
-- CSRF protection with express-session
-- Secure cookie configuration
-- MongoDB session storage
-- Environment-based configuration
-
-### 🎨 **User Experience**
-
-- Responsive design with Bootstrap
 - Flash messages for user feedback
+
+### 🔒 **Enterprise-Level Security Features**
+
+- **Helmet.js** integration with comprehensive security headers
+- **Content Security Policy (CSP)** with strict directives
+- **Rate limiting** on all routes with special auth limits
+- **MongoDB injection protection** with express-mongo-sanitize
+- **Input validation** with Joi schemas
+- **CSRF protection** with express-session
+- **Secure cookie configuration** with environment-based settings
+- **Environment variable validation** at startup
+- **XSS protection** and **MIME sniffing prevention**
+
+### 🎨 **Enhanced User Experience**
+
+- Responsive design with Bootstrap 5
+- Advanced search functionality with real-time results
 - Client-side and server-side validation
 - Error handling with custom error pages
-- Search functionality
+- Loading states and user feedback
+- Mobile-optimized interface
+- Accessible design patterns
 
 ---
 
@@ -97,6 +110,9 @@
 - **express-session** - Session middleware
 - **connect-mongo** - MongoDB session store
 - **connect-flash** - Flash message middleware
+- **Helmet.js** - Security headers and CSP
+- **express-rate-limit** - Rate limiting middleware
+- **express-mongo-sanitize** - MongoDB injection protection
 
 ### **File Upload & Storage**
 
@@ -123,11 +139,11 @@
 ```
 WanderLust/
 ├── 📁 controllers/           # Business logic layer
-│   ├── listing.js           # Listing CRUD operations
+│   ├── listing.js           # Listing CRUD operations with search
 │   ├── review.js            # Review management
 │   └── user.js              # User authentication logic
 ├── 📁 models/               # Database schemas
-│   ├── listing.js           # Listing model with coordinates
+│   ├── listing.js           # Listing model with coordinates & indexing
 │   ├── review.js            # Review model with ratings
 │   └── user.js              # User model with Passport integration
 ├── 📁 views/                # EJS templates
@@ -140,9 +156,10 @@ WanderLust/
 │   │   └── boilerplate.ejs  # Main layout template
 │   ├── 📁 listings/         # Listing-related templates
 │   │   ├── edit.ejs         # Edit listing form
-│   │   ├── index.ejs        # Listings grid view
+│   │   ├── index.ejs        # Listings grid with search & pagination
 │   │   ├── new.ejs          # Create listing form
-│   │   └── show.ejs         # Listing detail view
+│   │   ├── search.ejs       # Search results template
+│   │   └── show.ejs         # Listing detail view with maps
 │   └── 📁 users/            # User-related templates
 │       ├── login.ejs        # Login form
 │       └── signup.ejs       # Registration form
@@ -153,17 +170,18 @@ WanderLust/
 │   └── 📁 js/               # Client-side JavaScript
 │       └── script.js        # Main JavaScript file
 ├── 📁 Routes/               # API route definitions
-│   ├── listing.js           # Listing routes (/listings)
+│   ├── listing.js           # Listing routes with search (/listings)
 │   ├── review.js            # Review routes (/listings/:id/reviews)
 │   └── user.js              # User routes (/signup, /login, /logout)
 ├── 📁 utils/                # Utility functions
 │   ├── ExpressError.js      # Custom error handling class
 │   ├── geocodeing.js        # MapTiler API integration
+│   ├── security.js          # Security middleware configuration
 │   └── wrapAsync.js         # Async error wrapper
 ├── 📁 init/                 # Database initialization
 │   ├── data.js              # Sample listing data
 │   └── index.js             # Database seeding script
-├── 📄 app.js                # Main application entry point
+├── 📄 app.js                # Main application entry point with security
 ├── 📄 middleware.js         # Custom middleware functions
 ├── 📄 cloudConfig.js        # Cloudinary configuration
 ├── 📄 schema.js             # Joi validation schemas
@@ -264,13 +282,14 @@ GET  /logout          # Logout user
 ### **Listing Routes**
 
 ```
-GET    /listings           # Get all listings
-GET    /listings/new       # Render create listing form
-POST   /listings           # Create new listing
-GET    /listings/:id       # Get specific listing
-GET    /listings/:id/edit  # Render edit listing form
-PUT    /listings/:id       # Update specific listing
-DELETE /listings/:id       # Delete specific listing
+GET    /listings              # Get all listings with search & pagination
+GET    /listings/search       # Search listings with query parameters
+GET    /listings/new          # Render create listing form
+POST   /listings              # Create new listing
+GET    /listings/:id          # Get specific listing with reviews
+GET    /listings/:id/edit     # Render edit listing form
+PUT    /listings/:id          # Update specific listing
+DELETE /listings/:id          # Delete specific listing
 ```
 
 ### **Review Routes**
@@ -298,18 +317,19 @@ DELETE /listings/:id/reviews/:reviewId # Delete specific review
 
 ```javascript
 {
-  title: String (required),
-  description: String,
+  title: String (required, indexed for search),
+  description: String (indexed for search),
   image: {
     url: String,
     filename: String
   },
-  price: Number,
-  location: String,
-  country: String,
+  price: Number (required),
+  location: String (indexed for search),
+  country: String (indexed for search),
   coordinates: [Number], // [longitude, latitude]
   reviews: [ObjectId] (ref: Review),
-  owner: ObjectId (ref: User)
+  owner: ObjectId (ref: User),
+  createdAt: Date (default: Date.now)
 }
 ```
 
@@ -326,7 +346,62 @@ DELETE /listings/:id/reviews/:reviewId # Delete specific review
 
 ---
 
-## 🛡️ Middleware & Security
+## 🔍 Search & Performance
+
+### **Advanced Search Features**
+
+- **Full-text search** across listing titles, descriptions, and locations
+- **MongoDB text indexes** for optimized search performance
+- **Pagination support** with configurable page sizes
+- **Search result highlighting** and relevance scoring
+- **Empty state handling** with user-friendly messages
+- **Search persistence** across page navigation
+
+### **Performance Optimizations**
+
+- **Database indexing** on frequently searched fields
+- **Lazy loading** for images and maps
+- **Efficient pagination** to handle large datasets
+- **Optimized database queries** with selective field loading
+- **Client-side caching** for improved user experience
+- **Responsive image delivery** via Cloudinary
+
+### **Database Indexes**
+
+```javascript
+// Text search index
+{ title: "text", description: "text", location: "text", country: "text" }
+
+// Geographic index for location-based queries
+{ coordinates: "2dsphere" }
+
+// Performance indexes
+{ owner: 1 }, { createdAt: -1 }
+```
+
+---
+
+## 🛡️ Security & Middleware
+
+### **Security Middleware Stack**
+
+- **Helmet.js Configuration**:
+
+  - Content Security Policy (CSP) with strict directives
+  - XSS protection and MIME sniffing prevention
+  - Referrer policy and feature policy headers
+  - HTTPS strict transport security
+
+- **Rate Limiting**:
+
+  - General routes: 100 requests per 15 minutes
+  - Authentication routes: 5 requests per 15 minutes
+  - IP-based tracking with memory store
+
+- **Input Sanitization**:
+  - MongoDB injection prevention
+  - HTML sanitization for user inputs
+  - File upload validation and restrictions
 
 ### **Authentication Middleware**
 
@@ -342,14 +417,15 @@ DELETE /listings/:id/reviews/:reviewId # Delete specific review
 
 - `validateListing`: Joi schema validation for listing data
 - `validateReview`: Joi schema validation for review data
+- Server-side validation with detailed error messages
 
-### **Security Features**
+### **Custom Security Features**
 
-- Password hashing with salt
-- Session-based authentication
-- CSRF protection
-- Secure cookie configuration
-- Input sanitization and validation
+- Environment variable validation at startup
+- Secure session configuration with MongoDB store
+- Password complexity requirements
+- CSRF token validation
+- File upload restrictions and validation
 
 ---
 
@@ -409,6 +485,10 @@ We welcome contributions to WanderLust! Here's how you can help:
 - 🎨 UI/UX improvements
 - 🧪 Test coverage expansion
 - 🚀 Performance optimizations
+- 🔒 Security enhancements
+- 🔍 Search algorithm improvements
+- 📱 Mobile responsiveness
+- 🌐 Internationalization support
 
 ---
 
@@ -430,10 +510,13 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 🙏 Acknowledgments
 
 - Inspired by Airbnb's user experience and functionality
-- Built as part of web development learning journey
+- Built as part of advanced web development learning journey
 - Thanks to the open-source community for amazing tools and libraries
 - Special thanks to MapTiler for geocoding services
 - Cloudinary for seamless image management
+- MongoDB for robust database solutions
+- Helmet.js team for comprehensive security middleware
+- Express.js community for middleware ecosystem
 
 ---
 
