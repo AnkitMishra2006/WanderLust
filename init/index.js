@@ -41,27 +41,29 @@
 const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listing.js");
+const dotenv = require("dotenv");
+dotenv.config();
 
 main()
   .then((res) => {
-    console.log("connection successful");
+    // Connection successful
   })
   .catch((err) => {
-    console.log(err);
+    console.error(err);
   });
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+  await mongoose.connect(process.env.MONGO_URL);
 }
 
 const initDb = async () => {
   await Listing.deleteMany({});
   initData.data = initData.data.map((obj) => ({
     ...obj,
-    owner: "6871352512b9024abc99e919",
+    owner: "688ecbd751381f9487947a92",
   }));
   await Listing.insertMany(initData.data);
-  console.log("data was initialised");
+  // Database initialized
 };
 
 initDb();

@@ -255,15 +255,11 @@
       const taxButton = document.querySelector(".tax-switch button");
 
       if (!taxButton) {
-        console.error("Tax button not found!");
         return;
       }
 
-      console.log("Tax button found, adding event listener");
-
       taxButton.addEventListener("click", function (e) {
         e.preventDefault();
-        console.log("Tax button clicked!");
 
         // Toggle button active state
         taxButton.classList.toggle("tax-active");
@@ -274,15 +270,12 @@
 
         // Toggle tax info visibility
         const taxInfoElements = document.querySelectorAll(".tax-info");
-        console.log("Found", taxInfoElements.length, "tax-info elements");
 
         taxInfoElements.forEach(function (element, index) {
           if (isActive) {
             element.style.display = "inline";
-            console.log("Showing tax info element", index);
           } else {
             element.style.display = "none";
-            console.log("Hiding tax info element", index);
           }
         });
       });

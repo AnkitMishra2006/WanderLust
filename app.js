@@ -23,7 +23,6 @@ const {
   authLimiter,
   mongoSanitize,
 } = require("./utils/security.js");
-const logger = require("./utils/logger.js");
 
 const listingRouter = require("./Routes/listing.js");
 const reviewRouter = require("./Routes/review.js");
@@ -65,10 +64,10 @@ app.engine("ejs", ejsMate);
 
 main()
   .then(() => {
-    logger.info("Connection to DB Successful");
+    // Database connected successfully
   })
   .catch((err) => {
-    logger.error("Database connection failed:", err);
+    console.error("Database connection failed:", err);
     process.exit(1);
   });
 
@@ -85,7 +84,7 @@ const store = MongoStore.create({
 });
 
 store.on("error", () => {
-  logger.error("Session Store Error");
+  console.error("Session Store Error");
 });
 
 const sessionOptions = {
@@ -143,10 +142,9 @@ app.all("*", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something Went Wrong" } = err;
-  logger.error("Error occurred:", err);
   res.status(statusCode).render("Error.ejs", { err });
 });
 
 app.listen(port, () => {
-  logger.info(`App is listening on port ${port}`);
+  console.log(`App is listening on port ${port}`);
 });
